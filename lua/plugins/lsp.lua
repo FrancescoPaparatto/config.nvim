@@ -38,9 +38,10 @@ return {
 
       handlers = {
         function(server_name)
-          local capabilities = require("blink.cmp").get_lsp_capabilities()
+
+        local capabilities = require('cmp_nvim_lsp').default_capabilities()
           require("lspconfig")[server_name].setup({
-            capabilities = capabilities,
+            capabilities = capabilities
           })
         end,
       },
@@ -69,8 +70,8 @@ return {
             },
             python = {
               analysis = {
-                -- Ignore all files for analysis to exclusively use Ruff for linting
-                ignore = { "*" },
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true
               },
             },
           },

@@ -1,33 +1,46 @@
 return {
-  'saghen/blink.cmp',
-  -- optional: provides snippets for the snippet source
-  dependencies = { 'rafamadriz/friendly-snippets' },
-
-  version = '1.*',
-  opts = {
-    --
-    -- See :h blink-cmp-config-keymap for defining your own keymap
-    keymap = {
-      preset = 'default',
-    },
-
-    appearance = {
-      -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-      -- Adjusts spacing to ensure icons are aligned
-      nerd_font_variant = 'mono'
-    },
-
-    -- (Default) Only show the documentation popup when manually triggered
-    completion = { documentation = { auto_show = true } },
-    signature = { enabled = true },
-
-    -- Default list of enabled providers defined so that you can extend it
-    -- elsewhere in your config, without redefining it, due to `opts_extend`
-    sources = {
-      default = { 'lsp', 'path', 'snippets', 'buffer' },
-    },
-    -- See the fuzzy documentation for more information
-    fuzzy = { implementation = "prefer_rust_with_warning" }
+  {
+    "hrsh7th/cmp-nvim-lsp",
   },
-  opts_extend = { "sources.default" }
+  {
+    "L3MON4D3/LuaSnip",
+    dependencies = {
+      "saadparwaiz1/cmp_luasnip",
+      "rafamadriz/friendly-snippets",
+    },
+  },
+  {
+    "hrsh7th/nvim-cmp",
+    config = function()
+      local cmp = require("cmp")
+      require("luasnip.loaders.from_vscode").lazy_load()
+
+      cmp.setup({
+        snippet = {
+          expand = function(args)
+            require("luasnip").lsp_expand(args.body)
+          end,
+        },
+        window = {
+          completion = cmp.config.window.bordered(),
+          documentation = cmp.config.window.bordered(),
+        },
+        mapping = cmp.mapping.preset.insert({
+          ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+          ["<C-f>"] = cmp.mapping.scroll_docs(4),
+          ["<C-Space>"] = cmp.mapping.complete(),
+          ["<C-e>"] = cmp.mapping.abort(),
+          ["<Tab>"] = cmp.mapping.select_next_item(),
+          ["<S-Tab>"] = cmp.mapping.select_prev_item(),
+          ["<CR>"] = cmp.mapping.confirm({ select = true }),
+        }),
+        sources = cmp.config.sources({
+          { name = "nvim_lsp" },
+          { name = "luasnip" }, -- For luasnip users.
+        }, {
+          { name = "buffer" },
+        }),
+      })
+    end,
+  },
 }
