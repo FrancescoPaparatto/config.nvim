@@ -1,4 +1,4 @@
 
 # Custom plugin 
-/lua/plugins/stackmap.lua
+lua/plugins/stackmap.lua
 
