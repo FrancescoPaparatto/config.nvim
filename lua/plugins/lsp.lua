@@ -33,52 +33,34 @@ return {
         "gopls",
         "rust_analyzer",
         "clangd",
+        "ruff",
         "bashls",
       },
 
       handlers = {
         function(server_name)
-
-        local capabilities = require('cmp_nvim_lsp').default_capabilities()
+          local capabilities = require("cmp_nvim_lsp").default_capabilities()
           require("lspconfig")[server_name].setup({
-            capabilities = capabilities
+            capabilities = capabilities,
+          })
+        end,
+
+        ["gopls"] = function()
+          local lspconfig = require("lspconfig")
+          lspconfig.gopls.setup({
+            capabilities = capabilities,
+            settings = {
+              gopls = {
+                completeUnimported = true,
+                usePlaceholders = true,
+              },
+            },
           })
         end,
       },
-
-      ["gopls"] = function()
-        local lspconfig = require("lspconfig")
-        lspconfig.gopls.setup({
-          capabilities = capabilities,
-          settings = {
-            gopls = {
-              completeUnimported = true,
-              usePlaceholders = true,
-            },
-          },
-        })
-      end,
-
-      ["pyright"] = function()
-        local lspconfig = require("lspconfig")
-        lspconfig.pyright.setup({
-          capabilities = capabilities,
-          settings = {
-            pyright = {
-              -- Using Ruff's import organizer
-              disableOrganizeImports = true,
-            },
-            python = {
-              analysis = {
-                autoSearchPaths = true,
-                useLibraryCodeForTypes = true
-              },
-            },
-          },
-        })
-        lspconfig.ruff.setup({})
-      end,
     })
+
+    require("lspconfig").ruff.setup({})
 
     vim.diagnostic.config({
       virtual_text = true, -- inline errors
